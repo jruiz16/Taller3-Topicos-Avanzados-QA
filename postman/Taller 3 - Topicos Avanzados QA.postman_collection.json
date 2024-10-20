@@ -1,0 +1,428 @@
+{
+	"info": {
+		"_postman_id": "1561cbf1-a2db-454a-bcba-b88a2dde81b9",
+		"name": "Taller 3 - Topicos Avanzados QA",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4399063"
+	},
+	"item": [
+		{
+			"name": "API Rovers - By Martian sol",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type header is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Photos array and nested objects have the correct structure\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.photos).to.be.an('array');\r",
+							"    \r",
+							"    responseData.photos.forEach(function(photo) {\r",
+							"        pm.expect(photo).to.be.an('object');\r",
+							"        pm.expect(photo.id).to.be.a('number');\r",
+							"        pm.expect(photo.sol).to.be.a('number');\r",
+							"        \r",
+							"        pm.expect(photo.camera).to.be.an('object');\r",
+							"        pm.expect(photo.camera.id).to.be.a('number');\r",
+							"        pm.expect(photo.camera.name).to.be.a('string');\r",
+							"        pm.expect(photo.camera.rover_id).to.be.a('number');\r",
+							"        pm.expect(photo.camera.full_name).to.be.a('string');\r",
+							"        \r",
+							"        pm.expect(photo.img_src).to.be.a('string');\r",
+							"        pm.expect(photo.earth_date).to.be.a('string');\r",
+							"        \r",
+							"        pm.expect(photo.rover).to.be.an('object');\r",
+							"        pm.expect(photo.rover.id).to.be.a('number');\r",
+							"        pm.expect(photo.rover.name).to.be.a('string');\r",
+							"        pm.expect(photo.rover.landing_date).to.be.a('string');\r",
+							"        pm.expect(photo.rover.launch_date).to.be.a('string');\r",
+							"        pm.expect(photo.rover.status).to.be.a('string');\r",
+							"        pm.expect(photo.rover.max_sol).to.be.a('number');\r",
+							"        pm.expect(photo.rover.max_date).to.be.a('string');\r",
+							"        pm.expect(photo.rover.total_photos).to.be.a('number');\r",
+							"        \r",
+							"        pm.expect(photo.rover.cameras).to.be.an('array');\r",
+							"        photo.rover.cameras.forEach(function(camera) {\r",
+							"            pm.expect(camera.name).to.be.a('string');\r",
+							"            pm.expect(camera.full_name).to.be.a('string');\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Id, sol, img_src, and earth_date fields are present with expected data types\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.photos).to.be.an('array').that.is.not.empty;\r",
+							"    \r",
+							"    responseData.photos.forEach(photo => {\r",
+							"        pm.expect(photo.id).to.be.a('number');\r",
+							"        pm.expect(photo.sol).to.be.a('number');\r",
+							"        pm.expect(photo.img_src).to.be.a('string');\r",
+							"        pm.expect(photo.earth_date).to.be.a('string');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"const responseData = pm.response.json();\r",
+							"pm.environment.set(\"earth_date\", responseData.photos[0].earth_date);\r",
+							"console.log(\"earth_date almacenado: \" + pm.environment.get(\"earth_date\"));\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"sol\", \"1000\");\r",
+							"pm.environment.set(\"camera\", \"CHEMCAM\");\r",
+							"pm.environment.set(\"page\", \"1\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/mars-photos/api/v1/rovers/curiosity/photos?sol={{sol}}&camera={{camera}}&page={{page}}&api_key={{API-KEY}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"mars-photos",
+						"api",
+						"v1",
+						"rovers",
+						"curiosity",
+						"photos"
+					],
+					"query": [
+						{
+							"key": "sol",
+							"value": "{{sol}}",
+							"description": "sol (ranges from 0 to max found in endpoint)"
+						},
+						{
+							"key": "camera",
+							"value": "{{camera}}",
+							"description": "see table above for abbreviations"
+						},
+						{
+							"key": "page",
+							"value": "{{page}}",
+							"description": "25 items per page returned"
+						},
+						{
+							"key": "api_key",
+							"value": "{{API-KEY}}",
+							"description": "api.nasa.gov key for expanded usage"
+						}
+					]
+				},
+				"description": "### GET Mars Photos\n\nThis endpoint retrieves photos from the Mars rovers based on the sol (Martian day), camera, and page number.\n\n#### Request\n\n- URL: `{{URL}}/mars-photos/api/v1/rovers/curiosity/photos`\n    \n- Method: `GET`\n    \n- URL Parameters:\n    \n    - `sol` (required, integer): The Martian sol for which photos are requested.\n        \n    - `camera` (required, string): The specific camera for which photos are requested.\n        \n    - `page` (required, integer): The page number of the results.\n        \n    - `api_key` (required, string): The API key for authentication.\n        \n\n#### Response\n\nThe response is a JSON object with the following schema:\n\n``` json\n{\n  \"photos\": [\n    {\n      \"id\": \"integer\",\n      \"sol\": \"integer\",\n      \"camera\": {\n        \"id\": \"integer\",\n        \"name\": \"string\",\n        \"rover_id\": \"integer\",\n        \"full_name\": \"string\"\n      },\n      \"img_src\": \"string\",\n      \"earth_date\": \"string\",\n      \"rover\": {\n        \"id\": \"integer\",\n        \"name\": \"string\",\n        \"landing_date\": \"string\",\n        \"launch_date\": \"string\",\n        \"status\": \"string\",\n        \"max_sol\": \"integer\",\n        \"max_date\": \"string\",\n        \"total_photos\": \"integer\",\n        \"cameras\": [\n          {\n            \"name\": \"string\",\n            \"full_name\": \"string\"\n          }\n        ]\n      }\n    }\n  ]\n}\n\n ```\n\nThe response contains an array of photo objects, each with an ID, sol, camera details, image source, Earth date, and rover information."
+			},
+			"response": []
+		},
+		{
+			"name": "API Rovers - By Earth date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields - photos, camera, and rover\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.photos).to.exist;\r",
+							"    pm.expect(responseData.camera).to.exist;\r",
+							"    pm.expect(responseData.rover).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Photos array is present and contains expected number of elements\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.photos).to.exist;\r",
+							"    pm.expect(responseData.photos).to.be.an('array');\r",
+							"    pm.expect(responseData.photos).to.have.lengthOf.at.least(1);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that each photo object contains the expected fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array');\r",
+							"    \r",
+							"    responseData.forEach(function(photo) {\r",
+							"        pm.expect(photo).to.have.property('id');\r",
+							"        pm.expect(photo).to.have.property('sol');\r",
+							"        pm.expect(photo).to.have.property('earth_date');\r",
+							"        pm.expect(photo).to.have.property('camera');\r",
+							"        pm.expect(photo).to.have.property('img_src');\r",
+							"        pm.expect(photo).to.have.property('rover');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/mars-photos/api/v1/rovers/curiosity/photos?earth_date={{earth_date}}&api_key={{API-KEY}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"mars-photos",
+						"api",
+						"v1",
+						"rovers",
+						"curiosity",
+						"photos"
+					],
+					"query": [
+						{
+							"key": "earth_date",
+							"value": "{{earth_date}}"
+						},
+						{
+							"key": "api_key",
+							"value": "{{API-KEY}}"
+						}
+					]
+				},
+				"description": "This endpoint makes an HTTP GET request to retrieve photos taken by the Curiosity rover on Mars for a specific Earth date. The request requires the \"earth_date\" query parameter to specify the date and the \"api_key\" query parameter for authentication.\n\n### Request Parameters\n\n- `earth_date` (string, required): The Earth date for which the photos are requested.\n    \n- `api_key` (string, required): The API key for authentication.\n    \n\n### Response\n\nThe response will include a collection of photos taken by the Curiosity rover on the specified Earth date."
+			},
+			"response": []
+		},
+		{
+			"name": "API Natural - All",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseData = pm.response.json();\r",
+							"pm.environment.set(\"date\", responseData[0].date);\r",
+							"console.log(\"date almacenado: \" + pm.environment.get(\"date\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/EPIC/api/natural/all?api_key={{API-KEY}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"EPIC",
+						"api",
+						"natural",
+						"all"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{API-KEY}}"
+						}
+					]
+				},
+				"description": "### Retrieve All Natural Events\n\nThis endpoint makes an HTTP GET request to retrieve all natural events using the provided API key.\n\n#### Request Body\n\nThis request does not require a request body.\n\n#### Response Body\n\nThe response will be in JSON format with a status code of 200. The response body will contain an array of natural events, with each event object including a \"date\" field.\n\nExample response:\n\n``` json\n[\n    {\n        \"date\": \"\"\n    }\n]\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "API Natural - By Date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseData = pm.response.json();\r",
+							"pm.environment.set(\"image\", responseData[0].image);\r",
+							"console.log(\"image almacenado: \" + pm.environment.get(\"image\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/EPIC/api/natural/date/:date?api_key={{API-KEY}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"EPIC",
+						"api",
+						"natural",
+						"date",
+						":date"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{API-KEY}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "date",
+							"value": "{{date}}"
+						}
+					]
+				},
+				"description": "The API endpoint makes an HTTP GET request to retrieve data based on the provided date and API key. The response returned a status code of 500 along with a content type of text/html. The response body contains an HTML document with the title \"Server Error\" and a message indicating a server error.\n\n### Request\n\nThe request includes the following parameters:\n\n- `date` (in the URL path): The date for which the data is requested.\n    \n- `api_key` (as a query parameter): The API key for authentication.\n    \n\n### Response\n\nThe response body is in HTML format and includes a message indicating a server error. As per the user's request, the response can be documented as a JSON schema for the HTML content.\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\": \"HTML content of the response\"\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "API Natural - Get Image",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let date = pm.environment.get(\"date\");\r",
+							"let parts = date.split(\"-\");\r",
+							"let year = parts[0];\r",
+							"let month = parts[1];\r",
+							"let day = parts[2];\r",
+							"\r",
+							"pm.environment.set(\"year\", year);\r",
+							"pm.environment.set(\"month\", month);\r",
+							"pm.environment.set(\"day\", day);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/EPIC/archive/natural/{{year}}/{{month}}/{{day}}/png/{{image}}.png?api_key={{API-KEY}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"EPIC",
+						"archive",
+						"natural",
+						"{{year}}",
+						"{{month}}",
+						"{{day}}",
+						"png",
+						"{{image}}.png"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "{{API-KEY}}"
+						}
+					]
+				},
+				"description": "# Retrieve Archived Natural Image\n\nThis endpoint allows you to retrieve an archived natural image in PNG format for a specific date.\n\n### Request\n\n#### Request URL\n\n- `GET /EPIC/archive/natural/{{year}}/{{month}}/{{day}}/png/{{image}}.png`\n    \n\n#### Request Parameters\n\n- `year` (integer): The year of the archived image.\n    \n- `month` (integer): The month of the archived image.\n    \n- `day` (integer): The day of the archived image.\n    \n- `image` (string): The specific natural image to retrieve.\n    \n- `api_key` (string): Your API key for authentication.\n    \n\n### Response\n\nThe response will be in JSON format and will adhere to the following schema:\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"property1\": {\n            \"type\": \"string\"\n        },\n        \"property2\": {\n            \"type\": \"integer\"\n        },\n        ...\n    }\n}\n\n ```"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "https://api.nasa.gov",
+			"type": "string"
+		},
+		{
+			"key": "date",
+			"value": "2024-10-18",
+			"type": "string"
+		},
+		{
+			"key": "API-KEY",
+			"value": "lj2fy554AaPePW5MP7Ah34BM4S0NVQY0rB4e23CC",
+			"type": "string"
+		},
+		{
+			"key": "earth_date",
+			"value": "2015-05-30",
+			"type": "string"
+		},
+		{
+			"key": "image",
+			"value": "epic_1b_20241018002713",
+			"type": "string"
+		}
+	]
+}
